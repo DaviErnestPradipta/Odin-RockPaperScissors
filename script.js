@@ -1,39 +1,65 @@
+let humanScore = 0
+let computerScore = 0
+let roundsPlayed = 0
+const limit = 5
+
 function getComputerChoice() {
     return Math.floor(3 * Math.random())
 }
-function getHumanChoice() {
-    return prompt("Enter 0 for rock, 1 for paper, 2 for scissors:")
-}
-function playGame(limit) {
-    function playRound(humanSelection, computerSelection) {
-        if ((humanSelection - computerSelection + 3) % 3 === 1) {
-            humanScore += 1
-            console.log("You won the round!")
-        }
-        else if ((humanSelection - computerSelection + 3) % 3 === 2) {
-            computerScore += 1
-            console.log("Computer won the round!")
-        }
-        else {
-            console.log("No one won the round!")
-        }
+
+const changeAnnouncement = document.querySelector(`.announcement`)
+
+function playRound(humanSelection, computerSelection) {
+    if ((humanSelection - computerSelection + 3) % 3 === 1) {
+        humanScore += 1
+        changeAnnouncement.textContent = `You won round ${roundsPlayed + 1}!`
+    } 
+    else if ((humanSelection - computerSelection + 3) % 3 === 2) {
+        computerScore += 1
+        changeAnnouncement.textContent = `Computer won round ${roundsPlayed + 1}!`
     }
-    for (let i = 0; i < limit; i++) {
-        const humanSelection = getHumanChoice()
-        const computerSelection = getComputerChoice()
-        playRound(humanSelection, computerSelection)
+    else {
+        changeAnnouncement.textContent = `No one won round ${roundsPlayed + 1}!`
+    }
+
+    roundsPlayed += 1
+    updateScoreDisplay()
+
+    if (roundsPlayed >= limit || Math.abs(humanScore - computerScore) > limit - roundsPlayed) {
+        endGame()
     }
 }
-let humanScore = 0
-let computerScore = 0
-let limit = 5
-playGame(limit)
-if (humanScore > computerScore) {
-    console.log("You won the game!")
+
+function endGame() {
+    if (humanScore > computerScore) {
+        changeAnnouncement.textContent = `You won the game!`
+    }
+    else if (humanScore < computerScore) {
+        changeAnnouncement.textContent = `Computer won the game!`
+    }
+    else {
+        changeAnnouncement.textContent = `No one won the game!`
+    }
+
+    document.querySelectorAll("button").forEach(btn => btn.disabled = true);
 }
-else if (humanScore < computerScore) {
-    console.log("Computer won the game!")
+
+function updateScoreDisplay() {
+    const humanScoreDisplay = document.querySelector(`.humanScoreCounter`)
+    const computerScoreDisplay = document.querySelector(`.computerScoreCounter`)
+
+    if (humanScoreDisplay && computerScoreDisplay) {
+        humanScoreDisplay.textContent = `Human ${humanScore}`
+        computerScoreDisplay.textContent = `${computerScore} Computer`
+    }
 }
-else {
-    console.log("No one wins the game!")
+
+for (let i = 0; i <= 2; i++) {
+    const button = document.querySelector(`#button${i}`);
+    if (button) {
+        button.addEventListener("click", () => {
+            const computerSelection = getComputerChoice();
+            playRound(i, computerSelection);
+        });
+    }
 }
